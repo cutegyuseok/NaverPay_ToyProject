@@ -24,9 +24,9 @@ public class ShoppingService implements iShoppingService {
         return shoppingService;
     }
     @Override
-    public List<ShoppingDTO> getAllShoppingList(String mId,String startDate, String endDate) {
-
-        List<Shopping> shoppingList = shoppingDAO.selectAll(mId,startDate,endDate);
+    public List<ShoppingDTO> getShoppingList(String mId,String period) {
+        if(mId==null || period == null) return null;
+        List<Shopping> shoppingList = shoppingDAO.selectAll(mId,period);
         List<ShoppingDTO> list = new LinkedList<>();
         for(int i=0; i<shoppingList.size(); i++){
             list.add(shoppingList.get(i).toDTO());
@@ -36,7 +36,6 @@ public class ShoppingService implements iShoppingService {
 
     @Override
     public ShoppingDTO getShoppingInfo(String sId) {
-
         Shopping shopping = shoppingDAO.select(sId);
         ShoppingDTO shoppingDTO = shopping.toDTO();
         return shoppingDTO;
@@ -44,7 +43,6 @@ public class ShoppingService implements iShoppingService {
 
     @Override
     public void deleteShoppingList(String sId) {
-
         int res = shoppingDAO.delete(sId);
     }
 }

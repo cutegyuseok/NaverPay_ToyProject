@@ -14,18 +14,14 @@ import java.util.List;
 
 public class ShoppingDAO implements iShoppingDAO{
 
+    private Connection conn = null;
+    private PreparedStatement stmt = null;
+    private ResultSet rs = null;
     private static ShoppingDAO shoppingDAO = null;
 
-    private Connection conn = null;
-
-    private PreparedStatement stmt = null;
-
-    private ResultSet rs = null;
-
-    private static final String SHOPPING_SELECT = "select * from shopping where sId = ?";
-    private static final String ALL_SHOPPING_LIST = "select * from shopping where mId = ? and sDate >= ? and sDate <= ?";
-    private static final String SHOPPING_DELETE = "delete shopping where sId = ?";
-
+    private static final String SHOPPING_INFO_LIST_SELECT_BY_PERIOD = "SELECT * FROM shopping WHERE mId = ? AND sDate >=? ORDER BY sDate DESC";
+    private static final String SHOPPING_INFO_SELECT_BY_SID = "SELECT * FROM shopping where sId =?";
+    private static final String SHOPPING_INFO_DELETE_BY_SID =  "DELELTE * FROM shopping WHERE sId = ?";
     public static ShoppingDAO getInstance() {
         if (shoppingDAO == null) {
             shoppingDAO = new ShoppingDAO();
@@ -34,18 +30,15 @@ public class ShoppingDAO implements iShoppingDAO{
     }
 
     @Override
-    public Shopping select(String shoppingId) {
+    public Shopping select(String sId) {
         Shopping shopping = null;
         try {
             conn = JDBCMgr.getConnection();
-            stmt = conn.prepareStatement(SHOPPING_SELECT);
-            stmt.setString(1, shoppingId);
-
+            stmt = conn.prepareStatement(SHOPPING_INFO_SELECT_BY_SID);
+            stmt.setString(1, sId);
             rs = stmt.executeQuery();
-
             if (rs.next()) {
                 String mId = rs.getString("mId");
-                String sId = rs.getString("sId");
                 String sTitle = rs.getString("sTitle");
                 int sCount = rs.getInt("sCount");
                 int sPayment = rs.getInt("sPayment");
@@ -58,25 +51,24 @@ public class ShoppingDAO implements iShoppingDAO{
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
             JDBCMgr.close(rs, stmt, conn);
         }
         return shopping;
     }
 
     @Override
-    public List<Shopping> selectAll(String uId, String startDate, String endDate) {
-        List<Shopping> memberList = new LinkedList<>();
+    public List<Shopping> selectAll(String mId, String period) {
+        List<Shopping> shoppingList = new LinkedList<>();
         try {
             conn = JDBCMgr.getConnection();
-            stmt = conn.prepareStatement(ALL_SHOPPING_LIST);
-            stmt.setString(1, uId);
-            stmt.setString(2, startDate);
-            stmt.setString(3, endDate);
-
+            stmt = conn.prepareStatement(SHOPPING_INFO_LIST_SELECT_BY_PERIOD);
+            stmt.setString(1, mId);
+            stmt.setString(2, period);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                String mId = rs.getString("mId");
                 String sId = rs.getString("sId");
                 String sTitle = rs.getString("sTitle");
                 int sCount = rs.getInt("sCount");
@@ -86,15 +78,17 @@ public class ShoppingDAO implements iShoppingDAO{
                 String seller = rs.getString("seller");
                 String sellerPhoneNumber = rs.getString("sellerPhoneNumber");
 
-                memberList.add(new Shopping(mId, sId, sTitle, sCount, sPayment, sDate, sStatus,seller,sellerPhoneNumber));
+                shoppingList.add(new Shopping(mId, sId, sTitle, sCount, sPayment, sDate, sStatus,seller,sellerPhoneNumber));
             }
-
+            conn.commit();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally{
             JDBCMgr.close(rs, stmt, conn);
         }
-        return memberList;
+        return shoppingList;
     }
 
     @Override
@@ -102,7 +96,7 @@ public class ShoppingDAO implements iShoppingDAO{
         int res = 0;
         try {
             conn = JDBCMgr.getConnection();
-            stmt = conn.prepareStatement(SHOPPING_DELETE);
+            stmt = conn.prepareStatement(SHOPPING_INFO_DELETE_BY_SID);
             stmt.setString(1, sId);
             res = stmt.executeUpdate();
         } catch (SQLException e) {

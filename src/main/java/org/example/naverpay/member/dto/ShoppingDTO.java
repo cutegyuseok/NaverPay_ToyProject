@@ -5,27 +5,24 @@ import org.example.naverpay.member.vo.ShoppingVO;
 
 public class ShoppingDTO {
 
-    private String mId = ""; // 멤버 아이디
+    private String mId = "";
 
-    private String sId = ""; // 구매내역 아이디
+    private String sId = "";
 
-    private String sTitle = ""; // 구매내역 제목
+    private String sTitle = "";
 
-    private int sCount = 0; // 구매 수량
+    private int sCount = 0;
 
-    private int sPayment = 0; // 구매 금액
+    private int sPayment = 0;
 
-    private String sDate = ""; // 구매 날짜  YYYY.MM.DD
+    private String sDate = "";
 
-    private String sStatus = ""; // 구매 상태 (결제 완료, 취소 완료 ...)
+    private String sStatus = "";
 
-    private String seller = ""; // 판매자 이름
+    private String seller = "";
 
-    private String sellerPhoneNumber = ""; // 판매자 전화번호
+    private String sellerPhoneNumber = "";
 
-    ShoppingDTO(){
-
-    }
     public ShoppingDTO(String mId, String sId, String sTitle, int sCount, int sPayment, String sDate, String sStatus, String seller, String sellerPhoneNumber) {
         this.mId = mId;
         this.sId = sId;
@@ -130,10 +127,5 @@ public class ShoppingDTO {
                 ", seller='" + seller + '\'' +
                 ", sellerPhoneNumber='" + sellerPhoneNumber + '\'' +
                 '}';
-    }
-
-    public String show(){
-        return "제목 = "+sTitle+", 가격 = "+sPayment+", 구매날짜 = "+sDate+
-                ", 구매상태 = "+sStatus+", 판매자 = "+seller+", 판매자 전화번호 = "+sellerPhoneNumber;
     }
 }

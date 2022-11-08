@@ -61,8 +61,7 @@ public class ShoppingDetailController {
         shoppingService.deleteShoppingList(sId);
         String mId = session.getAttribute("SESSION_ID").toString();
         String startDate = getStartDate();
-        String endDate = getCurrentDate();
-        List<ShoppingDTO> shoppingDTOList = shoppingService.getAllShoppingList(mId,startDate,endDate);
+        List<ShoppingDTO> shoppingDTOList = shoppingService.getShoppingList(mId,startDate);
         model.addAttribute("shoppingList",shoppingDTOList);
 
         return "/member/login/shopping";

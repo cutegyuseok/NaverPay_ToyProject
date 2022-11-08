@@ -28,29 +28,28 @@ public class ShoppingController {
     private ShoppingService shoppingService = ShoppingService.getInstance();
 
     @Autowired
-    public ShoppingController(SessionMgr sessionMgr){ this.sessionMgr = sessionMgr; }
+    public ShoppingController(SessionMgr sessionMgr){
+        this.sessionMgr = sessionMgr;
+    }
 
-    @GetMapping(value = "/shopping") // 결제 내역 화면 접근
+    @GetMapping(value = "/shopping")
     public String shoppingPage(Locale locale, Model model, HttpServletRequest request, HttpSession session) {
 
-
+        if (session.getAttribute("SESSION_ID") == null) {
+            return "redirect:/";
+        }
         if (session.getAttribute("SESSION_ID") != null) {
             model.addAttribute("mId", sessionMgr.get(session));
         }
-
-        String mId = session.getAttribute("SESSION_ID").toString();
-        String startDate = getStartDate();
-        String endDate = getCurrentDate();
-        //String shoppingList = getAllShoppingList(mId,startDate,endDate);
-        List<ShoppingDTO> shoppingDTOList = shoppingService.getAllShoppingList(mId,startDate,endDate);
-        model.addAttribute("shoppingList",shoppingDTOList);
-
+            String mId = session.getAttribute("SESSION_ID").toString();
+            String period = getDefaltDate();
+            List<ShoppingDTO> shoppingListDTO = shoppingService.getShoppingList(mId, period);
+            model.addAttribute("shoppingList", shoppingListDTO);
         return "/member/login/shopping";
     }
 
-    @PostMapping("/shopping") // 기간 검색
-    public String searchShoppingList(@RequestParam String startDate,
-                                     @RequestParam String endDate,
+    @PostMapping("/shopping")
+    public String searchShoppingPage(@RequestParam String period,
                                      Model model, HttpServletRequest request,
                                      HttpSession session,
                                      HttpServletResponse response){
@@ -58,63 +57,16 @@ public class ShoppingController {
         if (session.getAttribute("SESSION_ID") == null) {
             return "redirect:/";
         }
-
-        // DB에서 로그인한 아이디의 모든 구매내역리스트를 가져온다.
         String mId = session.getAttribute("SESSION_ID").toString();
-       // String shoppingList = getAllShoppingList(mId,startDate,endDate);
-        List<ShoppingDTO> shoppingDTOList = shoppingService.getAllShoppingList(mId,startDate,endDate);
+        List<ShoppingDTO> shoppingDTOList = shoppingService.getShoppingList(mId,period);
         model.addAttribute("shoppingList",shoppingDTOList);
-
 
         return "/member/login/shopping";
     }
-
-    public String getAllShoppingList(String mId, String startDate, String endDate){
-
-        List<ShoppingDTO> shoppingDTOList = shoppingService.getAllShoppingList(mId,startDate,endDate);
-        StringBuilder sb = new StringBuilder();
-        if( shoppingDTOList != null ){
-
-            for(int i=0; i<shoppingDTOList.size(); i++){
-                sb.append("제목 : ");
-                sb.append(shoppingDTOList.get(i).getsTitle());
-                sb.append("\n");
-                sb.append("가격 : ");
-                sb.append(shoppingDTOList.get(i).getsPayment());
-                sb.append("\n");
-                sb.append("구매날짜 : ");
-                sb.append(shoppingDTOList.get(i).getsDate());
-                sb.append("\n");
-                sb.append("구매상태 : ");
-                sb.append(shoppingDTOList.get(i).getsStatus());
-                sb.append("\n");
-                sb.append("판매자 : ");
-                sb.append(shoppingDTOList.get(i).getSeller());
-                sb.append("\n");
-                sb.append("판매자 전화번호 : ");
-                sb.append(shoppingDTOList.get(i).getSellerPhoneNumber());
-                sb.append("\n");
-            }
-        }
-        return sb.toString();
-    }
-
-    public String getCurrentDate() {
-
-        LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        String currentDate = now.format(formatter);
-
-        return currentDate;
-    }
-
-    public String getStartDate(){
-
+    public String getDefaltDate() {
         LocalDate now = LocalDate.now().minusYears(2);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        String startDate = now.format(formatter);
-
-        return startDate;
+        String defaltDate = now.format(formatter);
+        return defaltDate;
     }
-
 }

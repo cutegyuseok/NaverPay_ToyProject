@@ -44,13 +44,8 @@
     <div>
         <form method="post" action="/members/shopping">
             <div class="form__list">
-                <label class="startDate" for="startDate">START DATE </label>
-                <input type="text" id="startDate" name="startDate" placeholder="yyyy.mm.dd" required/>
-            </div>
-
-            <div class="form__list">
-                <label for="endDate">END DATE</label>
-                <input type="text" id="endDate" name="endDate" placeholder="yyyy.mm.dd" required/>
+                <label for="period">기간 설정</label>
+                <input type="text" id="period" name="period" placeholder="yyyy.mm.dd" required/>
             </div>
             <input type="submit" name="submit" value="Submit">
         </form>
