@@ -11,7 +11,7 @@ body {
 }
 
 main {
-    width: 100vw;
+    width:auto;
     height: 90vh;
     margin: 0px;
     padding: 0px;
@@ -69,6 +69,7 @@ main label {
 }
 
 main .form__list {
+    width: max-content;
     height: auto;
 }
 
